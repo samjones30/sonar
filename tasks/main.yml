@@ -3,14 +3,14 @@
 
 # install
 - name: useradd | create sonarqube user
-   user:
-    name: sonarqube
-    password: 'change1tchange1t'
-    state: present
-    shell: /bin/bash
-    system: no
-    createhome: yes
-    home: /home/sonarqube
+    user:
+      name: sonarqube
+      password: 'change1tchange1t'
+      state: present
+      shell: /bin/bash
+      system: no
+      createhome: yes
+      home: /home/sonarqube
 - name: sonarqube | download and extract binary
     unarchive:
       src: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.1.0.31237.zip
