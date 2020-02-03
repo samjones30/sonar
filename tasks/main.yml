@@ -2,6 +2,8 @@
 # main.yml
 
 # install
+- name: ulimit changes | file descriptors
+  command: ulimit -u 65535
 - name: useradd | create sonarqube user
   user:
     name: sonarqube
@@ -37,4 +39,12 @@
     regexp: '^#sonar.jdbc.url=jdbc:postgresql:'
     line: 'sonar.jdbc.url=jdbc:postgresql://{{ item.endpoint.address }}:3306/sonarqube'
   loop: '{{ rds_facts.instances }}'
+
+- name: sonarqube | change ownership
+  file:
+    path: /opt/sonarqube
+    state: directory
+    recurse: yes
+    owner: sonarqube
+    group: sonarqube
   notify: restart sonar
