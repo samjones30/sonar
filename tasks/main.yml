@@ -3,38 +3,38 @@
 
 # install
 - name: useradd | create sonarqube user
-    user:
-      name: sonarqube
-      password: 'change1tchange1t'
-      state: present
-      shell: /bin/bash
-      system: no
-      createhome: yes
-      home: /home/sonarqube
+  user:
+    name: sonarqube
+    password: 'change1tchange1t'
+    state: present
+    shell: /bin/bash
+    system: no
+    createhome: yes
+    home: /home/sonarqube
 - name: sonarqube | download and extract binary
-    unarchive:
-      src: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.1.0.31237.zip
-      dest: /opt/sonarqube
-      remote_src: yes
+  unarchive:
+    src: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.1.0.31237.zip
+    dest: /opt/sonarqube
+    remote_src: yes
 - name: sonarqube | jdbc user
-    lineinfile:
-      path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
-      regexp: '^#sonar.jdbc.username'
-      line: 'sonar.jdbc.username=sonarqube'
+  lineinfile:
+    path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
+    regexp: '^#sonar.jdbc.username'
+    line: 'sonar.jdbc.username=sonarqube'
 - name: sonarqube | jdbc password
-    lineinfile:
-      path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
-      regexp: '^#sonar.jdbc.password'
-      line: 'sonar.jdbc.password=sonarqube_rds_password'
+  lineinfile:
+    path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
+    regexp: '^#sonar.jdbc.password'
+    line: 'sonar.jdbc.password=sonarqube_rds_password'
 - name: sonarqube | get postgres database url
-    rds_instance_facts:
-     db_instance_identifier: sonarqube
-     region: eu-west-2
-    register: rds_facts
+  rds_instance_facts:
+   db_instance_identifier: sonarqube
+   region: eu-west-2
+  register: rds_facts
 - name: sonarqube | update postgres db url
-    lineinfile:
-      path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
-      regexp: '^#sonar.jdbc.url=jdbc:postgresql:'
-      line: 'sonar.jdbc.url=jdbc:postgresql://{{ item.endpoint.address }}:3306/sonarqube'
-    loop: '{{ rds_facts.instances }}'
-    notify: restart sonar
+  lineinfile:
+    path: /opt/sonarqube/sonarqube-8.1.0.31237/conf/sonar.properties
+    regexp: '^#sonar.jdbc.url=jdbc:postgresql:'
+    line: 'sonar.jdbc.url=jdbc:postgresql://{{ item.endpoint.address }}:3306/sonarqube'
+  loop: '{{ rds_facts.instances }}'
+  notify: restart sonar
